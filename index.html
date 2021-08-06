@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>names</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <form autocomplete="off">
+      <label for="name">Name</label>
+      <input type="text" id="name" />
+
+      <input type="submit" value="submit" id="submit" title="provide name" />
+    </form>
+
+    <div class="namesCtr" id="namesCtr"></div>
+  </body>
+</html>
+
+<script>
+  let names;
+
+  const ctr = document.getElementById("namesCtr");
+
+  (function () {
+    names = JSON.parse(localStorage.getItem("names")) ?? [];
+    displayNames();
+  })();
+
+  function displayNames() {
+    ctr.innerHTML = "";
+    names = JSON.parse(localStorage.getItem("names")) ?? [];
+    names.forEach((name) => {
+      const card = document.createElement("div");
+      const h1 = document.createElement("h1");
+      const remove = document.createElement("button");
+      remove.id = "remove";
+
+      remove.innerText = "remove";
+      remove.value = name;
+      h1.innerText = name;
+
+      card.appendChild(h1);
+      card.appendChild(remove);
+
+      ctr.appendChild(card);
+
+      remove.addEventListener("click", (e) => removeName(e.target.value));
+    });
+  }
+
+  const submitBtn = document.getElementById("submit");
+  submitBtn.addEventListener("click", (e) => addName(e));
+
+  function addName(e) {
+    e.preventDefault();
+    let name = document.getElementById("name");
+    let nameRgx = /^[a-zA-Z\s]+$/;
+
+    if (nameRgx.test(name.value)) {
+      if (names.length > 0) {
+        names.push(name.value);
+      } else {
+        names[0] = name.value;
+      }
+      name.value = "";
+      localStorage.setItem("names", JSON.stringify(names));
+      displayNames();
+    } else {
+      name.focus();
+    }
+  }
+
+  function removeName(remove) {
+    names = JSON.parse(localStorage.getItem("names"));
+
+    const newNames = names.filter((name) => name != remove);
+    localStorage.setItem("names", JSON.stringify(newNames));
+    displayNames();
+  }
+</script>
